@@ -1,0 +1,923 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#F5F0E8;
+--card:#FFFDF7;
+--card2:#FFF8EC;
+--ink:#1A1A1A;
+--ink2:#555;
+--ink3:#888;
+--green:#3A8A2E;
+--green-bg:#E6F5E2;
+--green-border:#7DC870;
+--gold:#B8860B;
+--gold-bg:#FFF3C0;
+--red:#C0392B;
+--border:#DDD5C5;
+--radius:16px;
+--radius-sm:10px;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+#app{padding:16px;background:var(--bg);min-height:100vh}
+
+.top-bar{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
+.top-bar-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ball{font-size:26px;line-height:1}
+.top-bar h1{font-size:20px;font-weight:700;color:var(--ink);line-height:1.2}
+.top-bar h1 span{display:block;font-size:13px;font-weight:400;color:var(--ink2);margin-top:2px}
+
+.progress-wrap{background:#E8E0D0;border-radius:20px;height:18px;overflow:hidden;margin-bottom:10px}
+.progress-fill{height:100%;background:#3A8A2E;border-radius:20px;transition:width 0.4s;display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
+.progress-fill span{font-size:11px;font-weight:700;color:#fff}
+
+.stats-row{display:flex;gap:8px;flex-wrap:wrap}
+.stat-chip{background:var(--bg);border:1.5px solid var(--border);border-radius:30px;padding:5px 14px;font-size:13px;color:var(--ink2);white-space:nowrap}
+.stat-chip strong{color:var(--ink);font-weight:700}
+.sync-chip{border-color:#7DC870;background:#E6F5E2;color:#2e7a20}
+.sync-chip.offline{border-color:#E8A09A;background:#FDECEA;color:#C0392B}
+
+.search-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.search-bar input{flex:1;min-width:140px;font-size:15px;padding:10px 14px;border:2px solid var(--border);border-radius:30px;background:var(--card);color:var(--ink);outline:none}
+.search-bar input:focus{border-color:#3A8A2E}
+.search-bar select{font-size:14px;padding:10px 14px;border:2px solid var(--border);border-radius:30px;background:var(--card);color:var(--ink);outline:none;cursor:pointer}
+
+.region-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.rpill{padding:7px 16px;border-radius:30px;font-size:13px;font-weight:600;border:2px solid var(--border);background:var(--card);color:var(--ink2);cursor:pointer;transition:all 0.15s}
+.rpill.active{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
+
+.teams-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.team-card{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:14px 10px 12px;cursor:pointer;transition:all 0.15s;text-align:center;position:relative}
+.team-card:hover{border-color:#3A8A2E;background:var(--card2);transform:translateY(-2px)}
+.team-card.full{border-color:var(--green-border);background:var(--green-bg)}
+.team-flag{font-size:32px;display:block;margin-bottom:6px;line-height:1}
+.team-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.3}
+.mini-bar-wrap{background:#E8E0D0;border-radius:10px;height:8px;overflow:hidden;margin-bottom:5px}
+.mini-bar-fill{height:100%;background:#3A8A2E;border-radius:10px;transition:width 0.3s}
+.team-prog{font-size:12px;font-weight:700;color:var(--ink2)}
+.team-prog span{color:var(--green)}
+.complete-badge{position:absolute;top:6px;right:6px;font-size:14px}
+
+.back-btn{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--border);border-radius:30px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink);margin-bottom:16px;transition:all 0.15s}
+.back-btn:hover{background:var(--bg);border-color:#1A1A1A}
+.back-btn i{font-size:18px}
+
+.detail-header{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.d-flag{font-size:48px;line-height:1}
+.d-info h2{font-size:20px;font-weight:700;color:var(--ink)}
+.d-info p{font-size:13px;color:var(--ink2);margin-top:2px}
+.d-progress-wrap{flex:1;min-width:120px}
+.d-prog-bar{background:#E8E0D0;border-radius:10px;height:14px;overflow:hidden;margin-bottom:5px}
+.d-prog-fill{height:100%;background:#3A8A2E;border-radius:10px;transition:width 0.3s}
+.d-prog-text{font-size:13px;font-weight:700;color:var(--ink2)}
+.d-prog-text span{color:var(--green)}
+
+.filter-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.ftab{padding:9px 20px;border-radius:30px;font-size:14px;font-weight:700;border:2px solid var(--border);background:var(--card);color:var(--ink2);cursor:pointer;transition:all 0.12s}
+.ftab.active{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
+
+.stickers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sticker{background:var(--card);border:2px solid var(--border);border-radius:var(--radius-sm);padding:12px 10px;cursor:pointer;transition:all 0.12s;position:relative;text-align:center}
+.sticker:hover{border-color:#1A1A1A;transform:scale(1.03)}
+.sticker.got{background:var(--green-bg);border-color:var(--green-border)}
+.sticker.got .s-name{color:var(--green)}
+.sticker.got .s-code{color:#2e7a20}
+.s-code{font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:4px;letter-spacing:0.5px}
+.s-name{font-size:14px;font-weight:700;color:var(--ink);line-height:1.35;margin-bottom:4px}
+.s-type{display:inline-block;font-size:10px;font-weight:700;background:var(--gold-bg);color:var(--gold);border-radius:6px;padding:2px 7px;margin-top:2px}
+.s-check{position:absolute;top:6px;right:6px;width:20px;height:20px;background:#3A8A2E;border-radius:50%;display:none;align-items:center;justify-content:center}
+.s-check i{font-size:12px;color:#fff}
+.sticker.got .s-check{display:flex}
+
+.s-repeat{display:none;font-size:11px;font-weight:800;color:#C0392B;background:#FDECEA;border:1.5px solid #E8A09A;border-radius:8px;padding:2px 8px;margin-top:4px}
+.sticker.got .s-repeat.visible{display:inline-block}
+
+.s-minus{position:absolute;top:6px;left:6px;width:22px;height:22px;background:#C0392B;border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;border:none;color:#fff;font-size:14px;font-weight:700;line-height:1;padding:0;z-index:2;transition:transform 0.1s}
+.s-minus:hover{transform:scale(1.15)}
+.sticker.got .s-minus{display:flex}
+
+.empty-msg{color:var(--ink2);font-size:14px;padding:24px 0;text-align:center}
+
+.export-btn{font-size:14px;font-weight:800;padding:10px 16px;border:2px solid #1A1A1A;border-radius:30px;background:#1A1A1A;color:#fff;cursor:pointer;white-space:nowrap;transition:all .15s}
+.export-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.12)}
+#printReport{display:none}
+
+@media print{
+  @page{size:A4 portrait;margin:4mm}
+
+  html,body{
+    background:#fff !important;
+    color:#111 !important;
+    width:202mm !important;
+    min-height:289mm !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  body *{visibility:hidden !important}
+  #app{display:none !important}
+  #printReport,
+  #printReport *{visibility:visible !important}
+
+  #printReport{
+    display:block !important;
+    position:absolute !important;
+    left:0 !important;
+    top:0 !important;
+    width:202mm !important;
+    max-width:202mm !important;
+    min-height:289mm !important;
+    height:auto !important;
+    margin:0 !important;
+    padding:0 !important;
+    font-family:Arial,'Segoe UI',sans-serif;
+    color:#111;
+    box-sizing:border-box;
+  }
+
+  .print-header{
+    border-bottom:.7px solid #111;
+    padding:0 0 1.2mm 0;
+    margin:0 0 1.4mm 0;
+  }
+
+  .print-header h1{
+    font-size:14px;
+    margin:0;
+    line-height:1;
+    font-weight:900;
+    letter-spacing:-.15px;
+  }
+
+  .print-header p{display:none !important}
+
+  .print-stats{
+    display:grid !important;
+    grid-template-columns:repeat(4,1fr);
+    gap:1.5mm;
+    width:100%;
+    margin:0 0 2mm 0;
+  }
+
+  .print-stat{
+    border:.7px solid #999;
+    border-radius:2mm;
+    padding:1mm 1.4mm;
+    font-size:9px;
+    line-height:1;
+    white-space:nowrap;
+    background:#fafafa;
+  }
+
+  .print-stat strong{
+    display:inline;
+    font-size:13px;
+    margin-right:1.1mm;
+    font-weight:900;
+    color:#111;
+  }
+
+  .print-grid{
+    display:grid !important;
+    grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+    gap:1.1mm 1.3mm !important;
+    width:202mm !important;
+    max-width:202mm !important;
+    margin:0 !important;
+    padding:0 !important;
+    align-items:start;
+    align-content:start;
+  }
+
+  .print-team{
+    display:block !important;
+    width:auto !important;
+    min-width:0 !important;
+    border:.7px solid #aaa;
+    border-radius:2mm;
+    padding:.95mm 1.05mm;
+    margin:0 !important;
+    break-inside:avoid;
+    page-break-inside:avoid;
+    line-height:1.06;
+    overflow:hidden;
+    background:#fff;
+  }
+
+  .print-team h3{
+    font-size:8.2px;
+    margin:0 0 .65mm 0;
+    line-height:1.05;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-weight:900;
+    color:#111;
+  }
+
+  .print-line{
+    font-size:7.4px;
+    line-height:1.12;
+    margin:0;
+    color:#222;
+    word-break:normal;
+    overflow-wrap:anywhere;
+  }
+
+  .print-line strong{
+    font-size:7.5px;
+    font-weight:900;
+  }
+
+  .print-missing{color:#333}
+  .print-repeated{
+    color:#9B1C1C;
+    font-weight:800;
+    border-top:.45px solid #e1b4b4;
+    margin-top:.6mm;
+    padding-top:.5mm;
+  }
+
+  .print-repeats-summary,.print-legend{display:none !important}
+}
+
+@media (max-width: 768px){
+
+  #app{
+    padding:10px !important;
+  }
+
+  .teams-grid{
+    grid-template-columns:repeat(3, 1fr) !important;
+    gap:8px !important;
+  }
+
+  .team-card{
+    padding:14px 6px 12px !important;
+    border-radius:14px !important;
+    min-height:140px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+
+  .team-flag{
+    font-size:44px !important;
+    margin-bottom:8px !important;
+  }
+
+  .team-name{
+    font-size:13px !important;
+    font-weight:800 !important;
+    margin-bottom:8px !important;
+    line-height:1.2 !important;
+  }
+
+  .team-prog{
+    font-size:13px !important;
+    font-weight:800 !important;
+  }
+
+  .mini-bar-wrap{
+    height:8px !important;
+    margin-bottom:6px !important;
+    width:100% !important;
+  }
+
+  .stickers-grid{
+    grid-template-columns:repeat(3, 1fr) !important;
+    gap:8px !important;
+  }
+
+  .sticker{
+    padding:14px 8px !important;
+    border-radius:14px !important;
+    min-height:90px !important;
+  }
+
+  .s-code{
+    font-size:12px !important;
+    font-weight:800 !important;
+  }
+
+  .s-name{
+    font-size:13px !important;
+    font-weight:800 !important;
+    line-height:1.3 !important;
+  }
+
+  .top-bar h1{
+    font-size:20px !important;
+  }
+
+  .top-bar h1 span{
+    font-size:12px !important;
+  }
+
+  .stat-chip{
+    font-size:12px !important;
+    padding:4px 10px !important;
+  }
+
+  .search-bar input{
+    font-size:14px !important;
+    padding:8px 12px !important;
+    min-width:100px !important;
+  }
+
+  .search-bar select{
+    font-size:13px !important;
+    padding:8px 10px !important;
+  }
+
+  .rpill{
+    padding:6px 12px !important;
+    font-size:12px !important;
+  }
+
+  .filter-tabs{
+    gap:6px !important;
+  }
+
+  .ftab{
+    padding:7px 14px !important;
+    font-size:12px !important;
+  }
+
+  .detail-header{
+    padding:12px 14px !important;
+  }
+
+  .d-flag{
+    font-size:40px !important;
+  }
+
+  .d-info h2{
+    font-size:18px !important;
+  }
+
+  .complete-badge{
+    font-size:12px !important;
+    top:4px !important;
+    right:4px !important;
+  }
+
+  .s-minus{
+    width:20px !important;
+    height:20px !important;
+    font-size:12px !important;
+  }
+
+  .s-repeat{
+    font-size:10px !important;
+    padding:1px 6px !important;
+  }
+
+}
+</style>
+
+<div id="app">
+<div class="top-bar">
+  <div class="top-bar-title">
+    <span class="ball">⚽</span>
+    <h1>Album Panini 2026 - Registro de figuritas<span>48 selecciones + especiales · 980 figuritas</span></h1>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="mainProg" style="width:0%"><span id="pctTxt">0%</span></div></div>
+  <div class="stats-row">
+    <div class="stat-chip">Tengo: <strong id="gotC">0</strong> / 980</div>
+    <div class="stat-chip">Secciones completas: <strong id="fullT">0</strong> / <span id="sectionsT">49</span></div>
+    <div class="stat-chip">Me faltan: <strong id="missC">980</strong></div>
+    <div class="stat-chip">Repetidas: <strong id="repC">0</strong></div>
+    <div class="stat-chip sync-chip offline" id="syncStatus">Modo local</div>
+  </div>
+</div>
+
+<div id="teamsView">
+  <div class="search-bar">
+    <input type="text" id="srch" placeholder="Buscar selección..." oninput="renderTeams()">
+    <button class="export-btn" onclick="exportProgressPDF()">Exportar PDF / imprimir</button>
+  </div>
+  <div class="region-pills" id="regionPills"></div>
+  <div class="teams-grid" id="teamsGrid"></div>
+</div>
+
+<div id="detailView" style="display:none">
+  <button class="back-btn" onclick="showTeams()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Volver</button>
+  <div class="detail-header">
+    <div class="d-flag" id="dFlag"></div>
+    <div class="d-info"><h2 id="dName"></h2><p id="dSub"></p></div>
+    <div class="d-progress-wrap">
+      <div class="d-prog-bar"><div class="d-prog-fill" id="dProgFill" style="width:0%"></div></div>
+      <div class="d-prog-text"><span id="dGot">0</span> / <span id="dTotal">20</span> figuritas</div>
+    </div>
+  </div>
+  <div class="filter-tabs">
+    <button class="ftab active" onclick="setFilter('all',this)">Todas (20)</button>
+    <button class="ftab" id="ftGot" onclick="setFilter('got',this)">Las tengo (0)</button>
+    <button class="ftab" id="ftMiss" onclick="setFilter('miss',this)">Me faltan (20)</button>
+    <button class="ftab" id="ftRep" onclick="setFilter('rep',this)">Repetidas (0)</button>
+  </div>
+  <div class="stickers-grid" id="stGrid"></div>
+</div>
+</div>
+<div id="printReport"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getDatabase, ref, onValue, runTransaction, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+/*
+  PASO IMPORTANTE:
+  Reemplazá estos valores con el firebaseConfig real de tu proyecto Firebase.
+  Firebase Console → Project settings → General → Your apps → Web app → SDK setup and configuration.
+*/
+const firebaseConfig = {
+  apiKey: "AIzaSyDTFbEp1mDLGi_TPvBLJOQpriEnW7rXuI8",
+  authDomain: "panini-2026-9bbe5.firebaseapp.com",
+  databaseURL: "https://panini-2026-9bbe5-default-rtdb.firebaseio.com",
+  projectId: "panini-2026-9bbe5",
+  storageBucket: "panini-2026-9bbe5.firebasestorage.app",
+  messagingSenderId: "136100201530",
+  appId: "1:136100201530:web:448c4e47d9cd7479806103"
+};
+
+// Cambiá este ID si querés crear otro álbum separado dentro de la misma base.
+const ALBUM_ID = "panini-2026-compartido";
+const LOCAL_KEY = "panini26pub";
+const FIREBASE_READY = !firebaseConfig.apiKey.includes("REEMPLAZAR") && !firebaseConfig.databaseURL.includes("REEMPLAZAR");
+
+let db = null;
+let albumRef = null;
+let ownedRef = null;
+let isRemoteReady = false;
+let firstRemoteLoad = true;
+
+function setSyncStatus(text, online){
+  const el=document.getElementById('syncStatus');
+  if(!el)return;
+  el.textContent=text;
+  el.classList.toggle('offline',!online);
+}
+
+const REGIONS=['Todas','América','Europa','África','Asia','Oceanía','Especiales'];
+const TEAMS=[
+{code:'ARG',name:'Argentina',flag:'🇦🇷',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Emiliano Martínez'},{n:3,p:'Nahuel Molina'},{n:4,p:'Cristian Romero'},{n:5,p:'Nicolás Otamendi'},{n:6,p:'Nicolás Tagliafico'},{n:7,p:'Leonardo Balerdi'},{n:8,p:'Enzo Fernández'},{n:9,p:'Alexis Mac Allister'},{n:10,p:'Rodrigo De Paul'},{n:11,p:'Exequiel Palacios'},{n:12,p:'Leandro Paredes'},{n:13,p:'Foto equipo'},{n:14,p:'Nico Paz'},{n:15,p:'Franco Mastantuono'},{n:16,p:'Nicolás González'},{n:17,p:'Lionel Messi'},{n:18,p:'Lautaro Martínez'},{n:19,p:'Julián Álvarez'},{n:20,p:'Giuliano Simeone'}]},
+{code:'BRA',name:'Brasil',flag:'🇧🇷',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Alisson'},{n:3,p:'Bento'},{n:4,p:'Marquinhos'},{n:5,p:'Éder Militão'},{n:6,p:'Gabriel Magalhães'},{n:7,p:'Danilo'},{n:8,p:'Wesley'},{n:9,p:'Lucas Paquetá'},{n:10,p:'Casemiro'},{n:11,p:'Bruno Guimarães'},{n:12,p:'Luiz Henrique'},{n:13,p:'Foto equipo'},{n:14,p:'Vinícius Júnior'},{n:15,p:'Rodrygo'},{n:16,p:'João Pedro'},{n:17,p:'Matheus Cunha'},{n:18,p:'Gabriel Martinelli'},{n:19,p:'Raphinha'},{n:20,p:'Estêvão'}]},
+{code:'FRA',name:'Francia',flag:'🇫🇷',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Mike Maignan'},{n:3,p:'Théo Hernández'},{n:4,p:'William Saliba'},{n:5,p:'Jules Koundé'},{n:6,p:'Ibrahima Konaté'},{n:7,p:'Dayot Upamecano'},{n:8,p:'Lucas Digne'},{n:9,p:'Aurélien Tchouaméni'},{n:10,p:'Eduardo Camavinga'},{n:11,p:'Manu Koné'},{n:12,p:'Adrien Rabiot'},{n:13,p:'Foto equipo'},{n:14,p:'Michael Olise'},{n:15,p:'Ousmane Dembélé'},{n:16,p:'Bradley Barcola'},{n:17,p:'Désiré Doué'},{n:18,p:'Kingsley Coman'},{n:19,p:'Hugo Ekitiké'},{n:20,p:'Kylian Mbappé'}]},
+{code:'ESP',name:'España',flag:'🇪🇸',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Unai Simón'},{n:3,p:'Robin Le Normand'},{n:4,p:'Aymeric Laporte'},{n:5,p:'Dean Huijsen'},{n:6,p:'Pedro Porro'},{n:7,p:'Dani Carvajal'},{n:8,p:'Marc Cucurella'},{n:9,p:'Martín Zubimendi'},{n:10,p:'Rodri'},{n:11,p:'Pedri'},{n:12,p:'Fabián Ruiz'},{n:13,p:'Foto equipo'},{n:14,p:'Mikel Merino'},{n:15,p:'Lamine Yamal'},{n:16,p:'Dani Olmo'},{n:17,p:'Nico Williams'},{n:18,p:'Ferran Torres'},{n:19,p:'Álvaro Morata'},{n:20,p:'Mikel Oyarzabal'}]},
+{code:'ENG',name:'Inglaterra',flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Jordan Pickford'},{n:3,p:'John Stones'},{n:4,p:'Marc Guéhi'},{n:5,p:'Ezri Konsa'},{n:6,p:'Trent Alexander-Arnold'},{n:7,p:'Reece James'},{n:8,p:'Dan Burn'},{n:9,p:'Jordan Henderson'},{n:10,p:'Declan Rice'},{n:11,p:'Jude Bellingham'},{n:12,p:'Cole Palmer'},{n:13,p:'Foto equipo'},{n:14,p:'Morgan Rogers'},{n:15,p:'Anthony Gordon'},{n:16,p:'Phil Foden'},{n:17,p:'Bukayo Saka'},{n:18,p:'Harry Kane'},{n:19,p:'Marcus Rashford'},{n:20,p:'Ollie Watkins'}]},
+{code:'POR',name:'Portugal',flag:'🇵🇹',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Diogo Costa'},{n:3,p:'José Sá'},{n:4,p:'Rúben Dias'},{n:5,p:'João Cancelo'},{n:6,p:'Diogo Dalot'},{n:7,p:'Nuno Mendes'},{n:8,p:'Gonçalo Inácio'},{n:9,p:'Bernardo Silva'},{n:10,p:'Bruno Fernandes'},{n:11,p:'Rúben Neves'},{n:12,p:'Vitinha'},{n:13,p:'Foto equipo'},{n:14,p:'João Neves'},{n:15,p:'Cristiano Ronaldo'},{n:16,p:'Francisco Trincão'},{n:17,p:'João Félix'},{n:18,p:'Gonçalo Ramos'},{n:19,p:'Pedro Neto'},{n:20,p:'Rafael Leão'}]},
+{code:'GER',name:'Alemania',flag:'🇩🇪',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Marc-André ter Stegen'},{n:3,p:'Jonathan Tah'},{n:4,p:'David Raum'},{n:5,p:'Nico Schlotterbeck'},{n:6,p:'Antonio Rüdiger'},{n:7,p:'Waldemar Anton'},{n:8,p:'Ridle Baku'},{n:9,p:'Maximilian Mittelstädt'},{n:10,p:'Joshua Kimmich'},{n:11,p:'Florian Wirtz'},{n:12,p:'Felix Nmecha'},{n:13,p:'Foto equipo'},{n:14,p:'Leon Goretzka'},{n:15,p:'Jamal Musiala'},{n:16,p:'Serge Gnabry'},{n:17,p:'Kai Havertz'},{n:18,p:'Leroy Sané'},{n:19,p:'Karim Adeyemi'},{n:20,p:'Nick Woltemade'}]},
+{code:'NED',name:'Países Bajos',flag:'🇳🇱',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Bart Verbruggen'},{n:3,p:'Virgil van Dijk'},{n:4,p:'Micky van de Ven'},{n:5,p:'Jurriën Timber'},{n:6,p:'Denzel Dumfries'},{n:7,p:'Nathan Aké'},{n:8,p:'Jeremie Frimpong'},{n:9,p:'Jan Paul van Hecke'},{n:10,p:'Tijjani Reijnders'},{n:11,p:'Ryan Gravenberch'},{n:12,p:'Teun Koopmeiners'},{n:13,p:'Foto equipo'},{n:14,p:'Frenkie de Jong'},{n:15,p:'Xavi Simons'},{n:16,p:'Justin Kluivert'},{n:17,p:'Memphis Depay'},{n:18,p:'Donyell Malen'},{n:19,p:'Wout Weghorst'},{n:20,p:'Cody Gakpo'}]},
+{code:'BEL',name:'Bélgica',flag:'🇧🇪',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Thibaut Courtois'},{n:3,p:'Arthur Theate'},{n:4,p:'Timothy Castagne'},{n:5,p:'Zeno Debast'},{n:6,p:'Brandon Mechele'},{n:7,p:'Maxim De Cuyper'},{n:8,p:'Thomas Meunier'},{n:9,p:'Youri Tielemans'},{n:10,p:'Amadou Onana'},{n:11,p:'Nicolas Raskin'},{n:12,p:'Alexis Saelemaekers'},{n:13,p:'Foto equipo'},{n:14,p:'Hans Vanaken'},{n:15,p:'Kevin De Bruyne'},{n:16,p:'Jérémy Doku'},{n:17,p:'Charles De Ketelaere'},{n:18,p:'Leandro Trossard'},{n:19,p:'Loïs Openda'},{n:20,p:'Romelu Lukaku'}]},
+{code:'CRO',name:'Croacia',flag:'🇭🇷',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Dominik Livaković'},{n:3,p:'Duje Ćaleta-Car'},{n:4,p:'Joško Gvardiol'},{n:5,p:'Josip Stanišić'},{n:6,p:'Luka Vušković'},{n:7,p:'Josip Šutalo'},{n:8,p:'Kristijan Jakić'},{n:9,p:'Luka Modrić'},{n:10,p:'Mateo Kovačić'},{n:11,p:'Martin Baturina'},{n:12,p:'Lovro Majer'},{n:13,p:'Foto equipo'},{n:14,p:'Mario Pašalić'},{n:15,p:'Petar Sučić'},{n:16,p:'Ivan Perišić'},{n:17,p:'Marco Pašalić'},{n:18,p:'Ante Budimir'},{n:19,p:'Andrej Kramarić'},{n:20,p:'Franjo Ivanović'}]},
+{code:'SUI',name:'Suiza',flag:'🇨🇭',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Gregor Kobel'},{n:3,p:'Yvon Mvogo'},{n:4,p:'Manuel Akanji'},{n:5,p:'Ricardo Rodríguez'},{n:6,p:'Nico Elvedi'},{n:7,p:'Aurèle Amenda'},{n:8,p:'Silvan Widmer'},{n:9,p:'Granit Xhaka'},{n:10,p:'Denis Zakaria'},{n:11,p:'Remo Freuler'},{n:12,p:'Fabian Rieder'},{n:13,p:'Foto equipo'},{n:14,p:'Ardon Jashari'},{n:15,p:'Johan Manzambi'},{n:16,p:'Michel Aebischer'},{n:17,p:'Breel Embolo'},{n:18,p:'Ruben Vargas'},{n:19,p:'Dan Ndoye'},{n:20,p:'Zeki Amdouni'}]},
+{code:'AUT',name:'Austria',flag:'🇦🇹',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Alexander Schlager'},{n:3,p:'Patrick Pentz'},{n:4,p:'David Alaba'},{n:5,p:'Kevin Danso'},{n:6,p:'Philipp Lienhart'},{n:7,p:'Stefan Posch'},{n:8,p:'Phillipp Mwene'},{n:9,p:'Alexander Prass'},{n:10,p:'Xaver Schlager'},{n:11,p:'Marcel Sabitzer'},{n:12,p:'Konrad Laimer'},{n:13,p:'Foto equipo'},{n:14,p:'Florian Grillitsch'},{n:15,p:'Nicolas Seiwald'},{n:16,p:'Romano Schmid'},{n:17,p:'Patrick Wimmer'},{n:18,p:'Christoph Baumgartner'},{n:19,p:'Michael Gregoritsch'},{n:20,p:'Marko Arnautović'}]},
+{code:'TUR',name:'Türkiye',flag:'🇹🇷',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Uğurcan Çakır'},{n:3,p:'Mert Müldür'},{n:4,p:'Zeki Çelik'},{n:5,p:'Abdülkerim Bardakcı'},{n:6,p:'Çağlar Söyüncü'},{n:7,p:'Merih Demiral'},{n:8,p:'Ferdi Kadıoğlu'},{n:9,p:'Kaan Ayhan'},{n:10,p:'İsmail Yüksek'},{n:11,p:'Hakan Çalhanoğlu'},{n:12,p:'Orkun Kökçü'},{n:13,p:'Foto equipo'},{n:14,p:'Arda Güler'},{n:15,p:'İrfan Can Kahveci'},{n:16,p:'Yunus Akgün'},{n:17,p:'Can Uzun'},{n:18,p:'Barış Alper Yılmaz'},{n:19,p:'Kerem Aktürkoğlu'},{n:20,p:'Kenan Yıldız'}]},
+{code:'NOR',name:'Noruega',flag:'🇳🇴',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Ørjan Nyland'},{n:3,p:'Julian Ryerson'},{n:4,p:'Leo Østigård'},{n:5,p:'Kristoffer Ajer'},{n:6,p:'Marcus Holmgren Pedersen'},{n:7,p:'David Møller Wolfe'},{n:8,p:'Torbjørn Heggem'},{n:9,p:'Morten Thorsby'},{n:10,p:'Martin Ødegaard'},{n:11,p:'Sander Berge'},{n:12,p:'Andreas Schjelderup'},{n:13,p:'Foto equipo'},{n:14,p:'Patrick Berg'},{n:15,p:'Erling Haaland'},{n:16,p:'Alexander Sørloth'},{n:17,p:'Aron Dønnum'},{n:18,p:'Jørgen Strand Larsen'},{n:19,p:'Antonio Nusa'},{n:20,p:'Oscar Bobb'}]},
+{code:'SWE',name:'Suecia',flag:'🇸🇪',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Victor Johansson'},{n:3,p:'Isak Hien'},{n:4,p:'Gabriel Gudmundsson'},{n:5,p:'Emil Holm'},{n:6,p:'Victor Nilsson Lindelöf'},{n:7,p:'Gustaf Lagerbielke'},{n:8,p:'Lucas Bergvall'},{n:9,p:'Hugo Larsson'},{n:10,p:'Jesper Karlström'},{n:11,p:'Yasin Ayari'},{n:12,p:'Mattias Svanberg'},{n:13,p:'Foto equipo'},{n:14,p:'Daniel Svensson'},{n:15,p:'Ken Sema'},{n:16,p:'Roony Bardghji'},{n:17,p:'Dejan Kulusevski'},{n:18,p:'Anthony Elanga'},{n:19,p:'Alexander Isak'},{n:20,p:'Viktor Gyökeres'}]},
+{code:'SCO',name:'Escocia',flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Angus Gunn'},{n:3,p:'Jack Hendry'},{n:4,p:'Kieran Tierney'},{n:5,p:'Aaron Hickey'},{n:6,p:'Andrew Robertson'},{n:7,p:'Scott McKenna'},{n:8,p:'John Souttar'},{n:9,p:'Anthony Ralston'},{n:10,p:'Grant Hanley'},{n:11,p:'Scott McTominay'},{n:12,p:'Billy Gilmour'},{n:13,p:'Foto equipo'},{n:14,p:'Lewis Ferguson'},{n:15,p:'Ryan Christie'},{n:16,p:'Kenny McLean'},{n:17,p:'John McGinn'},{n:18,p:'Lyndon Dykes'},{n:19,p:'Che Adams'},{n:20,p:'Ben Doak'}]},
+{code:'CZE',name:'Chequia',flag:'🇨🇿',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Matej Kovár'},{n:3,p:'Jindřich Staněk'},{n:4,p:'Ladislav Krejčí'},{n:5,p:'Vladimír Coufal'},{n:6,p:'Jaroslav Zelený'},{n:7,p:'Tomáš Holeš'},{n:8,p:'David Zima'},{n:9,p:'Michal Sadílek'},{n:10,p:'Lukáš Provod'},{n:11,p:'Lukáš Červ'},{n:12,p:'Tomáš Souček'},{n:13,p:'Foto equipo'},{n:14,p:'Pavel Šulc'},{n:15,p:'Matěj Vydra'},{n:16,p:'Vasil Kušej'},{n:17,p:'Tomáš Chorý'},{n:18,p:'Václav Černý'},{n:19,p:'Adam Hložek'},{n:20,p:'Patrik Schick'}]},
+{code:'BIH',name:'Bosnia y Herz.',flag:'🇧🇦',region:'Europa',s:[
+{n:1,p:'Escudo'},{n:2,p:'Nikola Vasilj'},{n:3,p:'Amer Dedic'},{n:4,p:'Sead Kolašinac'},{n:5,p:'Tarik Muharemović'},{n:6,p:'Nihad Mujakic'},{n:7,p:'Nikola Katić'},{n:8,p:'Amir Hadžiahmetović'},{n:9,p:'Benjamin Tahirović'},{n:10,p:'Armin Gigović'},{n:11,p:'Ivan Šunjić'},{n:12,p:'Ivan Bašić'},{n:13,p:'Foto equipo'},{n:14,p:'Dženis Burnić'},{n:15,p:'Esmir Bajraktarević'},{n:16,p:'Amar Memić'},{n:17,p:'Ermedin Demirović'},{n:18,p:'Edin Džeko'},{n:19,p:'Samed Baždar'},{n:20,p:'Haris Tabakovic'}]},
+{code:'MEX',name:'México',flag:'🇲🇽',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Luis Malagón'},{n:3,p:'Johan Vásquez'},{n:4,p:'Jorge Sánchez'},{n:5,p:'César Montes'},{n:6,p:'Jesús Gallardo'},{n:7,p:'Israel Reyes'},{n:8,p:'Diego Lainez'},{n:9,p:'Carlos Rodríguez'},{n:10,p:'Edson Álvarez'},{n:11,p:'Orbelín Pineda'},{n:12,p:'Marcel Ruiz'},{n:13,p:'Foto equipo'},{n:14,p:'Érick Sánchez'},{n:15,p:'Hirving Lozano'},{n:16,p:'Santiago Giménez'},{n:17,p:'Raúl Jiménez'},{n:18,p:'Alexis Vega'},{n:19,p:'Roberto Alvarado'},{n:20,p:'César Huerta'}]},
+{code:'USA',name:'Estados Unidos',flag:'🇺🇸',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Matt Freese'},{n:3,p:'Chris Richards'},{n:4,p:'Tim Ream'},{n:5,p:'Mark McKenzie'},{n:6,p:'Alex Freeman'},{n:7,p:'Antonee Robinson'},{n:8,p:'Tyler Adams'},{n:9,p:'Tanner Tessmann'},{n:10,p:'Weston McKennie'},{n:11,p:'Christian Roldán'},{n:12,p:'Timothy Weah'},{n:13,p:'Foto equipo'},{n:14,p:'Diego Luna'},{n:15,p:'Malik Tillman'},{n:16,p:'Christian Pulisic'},{n:17,p:'Brenden Aaronson'},{n:18,p:'Ricardo Pepi'},{n:19,p:'Haji Wright'},{n:20,p:'Folarin Balogun'}]},
+{code:'CAN',name:'Canadá',flag:'🇨🇦',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Dayne St.Clair'},{n:3,p:'Alphonso Davies'},{n:4,p:'Alistair Johnston'},{n:5,p:'Samuel Adekugbe'},{n:6,p:'Richie Laryea'},{n:7,p:'Derek Cornelius'},{n:8,p:'Moïse Bombito'},{n:9,p:'Kamal Miller'},{n:10,p:'Stephen Eustáquio'},{n:11,p:'Ismaël Koné'},{n:12,p:'Jonathan Osorio'},{n:13,p:'Foto equipo'},{n:14,p:'Jacob Shaffelburg'},{n:15,p:'Mathieu Choinière'},{n:16,p:'Niko Sigur'},{n:17,p:'Tajon Buchanan'},{n:18,p:'Liam Millar'},{n:19,p:'Cyle Larin'},{n:20,p:'Jonathan David'}]},
+{code:'URU',name:'Uruguay',flag:'🇺🇾',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Sergio Rochet'},{n:3,p:'Santiago Mele'},{n:4,p:'Ronald Araújo'},{n:5,p:'José María Giménez'},{n:6,p:'Sebastián Cáceres'},{n:7,p:'Mathías Olivera'},{n:8,p:'Guillermo Varela'},{n:9,p:'Nahitán Nández'},{n:10,p:'Federico Valverde'},{n:11,p:'Giorgian De Arrascaeta'},{n:12,p:'Rodrigo Bentancur'},{n:13,p:'Foto equipo'},{n:14,p:'Manuel Ugarte'},{n:15,p:'Nicolás de la Cruz'},{n:16,p:'Maximiliano Araújo'},{n:17,p:'Darwin Núñez'},{n:18,p:'Federico Viñas'},{n:19,p:'Rodrigo Aguirre'},{n:20,p:'Facundo Pellistri'}]},
+{code:'COL',name:'Colombia',flag:'🇨🇴',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Camilo Vargas'},{n:3,p:'David Ospina'},{n:4,p:'Dávinson Sánchez'},{n:5,p:'Yerry Mina'},{n:6,p:'Daniel Muñoz'},{n:7,p:'Johan Mojica'},{n:8,p:'Jhon Lucumí'},{n:9,p:'Santiago Arias'},{n:10,p:'Jefferson Lerma'},{n:11,p:'Kevin Castaño'},{n:12,p:'Richard Ríos'},{n:13,p:'Foto equipo'},{n:14,p:'James Rodríguez'},{n:15,p:'Juan Fernando Quintero'},{n:16,p:'Jorge Carrascal'},{n:17,p:'Juan Camilo Arias'},{n:18,p:'Jhon Córdova'},{n:19,p:'Luis Suárez'},{n:20,p:'Luis Díaz'}]},
+{code:'ECU',name:'Ecuador',flag:'🇪🇨',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Hernán Galíndez'},{n:3,p:'Gonzalo Valle'},{n:4,p:'Piero Hincapié'},{n:5,p:'Pervis Estupiñán'},{n:6,p:'Willian Pacho'},{n:7,p:'Ángelo Preciado'},{n:8,p:'Joel Ordóñez'},{n:9,p:'Moisés Caicedo'},{n:10,p:'Alan Franco'},{n:11,p:'Kendry Páez'},{n:12,p:'Pedro Vite'},{n:13,p:'Foto equipo'},{n:14,p:'John Yeboah'},{n:15,p:'Leonardo Campana'},{n:16,p:'Gonzalo Plata'},{n:17,p:'Nilson Angulo'},{n:18,p:'Alan Minda'},{n:19,p:'Kevin Rodríguez'},{n:20,p:'Enner Valencia'}]},
+{code:'PAR',name:'Paraguay',flag:'🇵🇾',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Roberto Fernández'},{n:3,p:'Orlando Gill'},{n:4,p:'Gustavo Gómez'},{n:5,p:'Fabián Balbuena'},{n:6,p:'Juan José Cáceres'},{n:7,p:'Omar Alderete'},{n:8,p:'Junior Alonso'},{n:9,p:'Mathías Villasanti'},{n:10,p:'Diego Gómez'},{n:11,p:'Damián Bobadilla'},{n:12,p:'Andrés Cubas'},{n:13,p:'Foto equipo'},{n:14,p:'Matías Galarza'},{n:15,p:'Julio Enciso'},{n:16,p:'Alejandro Romero Gamarra'},{n:17,p:'Miguel Almirón'},{n:18,p:'Ramón Sosa'},{n:19,p:'Ángel Romero'},{n:20,p:'Antonio Sanabria'}]},
+{code:'HAI',name:'Haití',flag:'🇭🇹',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Johny Placide'},{n:3,p:'Carlens Arcus'},{n:4,p:'Martin Expérience'},{n:5,p:'Jean-Kevin Duverne'},{n:6,p:'Ricardo Adé'},{n:7,p:'Duke Lacroix'},{n:8,p:'Garven Metusala'},{n:9,p:'Hannes Delcroix'},{n:10,p:'Leverton Pierre'},{n:11,p:'Danley Jean Jacques'},{n:12,p:'Jean-Ricner Bellegarde'},{n:13,p:'Foto equipo'},{n:14,p:'Christopher Attys'},{n:15,p:'Derrick Etienne Jr.'},{n:16,p:'Josue Casimir'},{n:17,p:'Ruben Providence'},{n:18,p:'Duckens Nazon'},{n:19,p:'Louicius Deedson'},{n:20,p:'Frantzdy Pierrot'}]},
+{code:'PAN',name:'Panamá',flag:'🇵🇦',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Orlando Mosquera'},{n:3,p:'Luis Mejía'},{n:4,p:'Fidel Escobar'},{n:5,p:'Andrés Andrade'},{n:6,p:'Michael Amir Murillo'},{n:7,p:'Eric Davis'},{n:8,p:'José Córdoba'},{n:9,p:'César Blackman'},{n:10,p:'Cristian Martínez'},{n:11,p:'Aníbal Godoy'},{n:12,p:'Adalberto Carrasquilla'},{n:13,p:'Foto equipo'},{n:14,p:'Édgar Bárcenas'},{n:15,p:'Carlos Harvey'},{n:16,p:'Ismael Díaz'},{n:17,p:'José Fajardo'},{n:18,p:'Cecilio Waterman'},{n:19,p:'José Luis Rodríguez'},{n:20,p:'Alberto Quintero'}]},
+{code:'CUW',name:'Curaçao',flag:'🇨🇼',region:'América',s:[
+{n:1,p:'Escudo'},{n:2,p:'Eloy Room'},{n:3,p:'Armando Obispo'},{n:4,p:'Sherel Floranus'},{n:5,p:'Jurien Gaari'},{n:6,p:'Joshua Brenet'},{n:7,p:'Roshon van Eijma'},{n:8,p:'Shurandy Sambo'},{n:9,p:'Livano Comenencia'},{n:10,p:'Godfried Roemeratoe'},{n:11,p:'Juninho Bacuna'},{n:12,p:'Leandro Bacuna'},{n:13,p:'Foto equipo'},{n:14,p:'Tahith Chong'},{n:15,p:'Kenji Gorre'},{n:16,p:'Jearl Margaritha'},{n:17,p:'Jurgen Locadia'},{n:18,p:'Jeremy Antonisse'},{n:19,p:'Gervane Kastaneer'},{n:20,p:'Sontje Hansen'}]},
+{code:'MAR',name:'Marruecos',flag:'🇲🇦',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Yassine Bounou'},{n:3,p:'Munir El Kajoui'},{n:4,p:'Achraf Hakimi'},{n:5,p:'Noussair Mazraoui'},{n:6,p:'Nayef Aguerd'},{n:7,p:'Roman Saïss'},{n:8,p:'Jawad El Yamiq'},{n:9,p:'Adam Masina'},{n:10,p:'Sofyan Amrabat'},{n:11,p:'Azzedine Ounahi'},{n:12,p:'Eliesse Ben Seghir'},{n:13,p:'Foto equipo'},{n:14,p:'Bilal El Khannouss'},{n:15,p:'Ismail Saibari'},{n:16,p:'Youssef En-Nesyri'},{n:17,p:'Abde Ezzalzouli'},{n:18,p:'Soufiane Rahimi'},{n:19,p:'Brahim Díaz'},{n:20,p:'Ayoub El Kaabi'}]},
+{code:'SEN',name:'Senegal',flag:'🇸🇳',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Édouard Mendy'},{n:3,p:'Yehvann Diouf'},{n:4,p:'Moussa Niakhaté'},{n:5,p:'Abdoulaye Seck'},{n:6,p:'Ismail Jakobs'},{n:7,p:'El Hadji Malick Diouf'},{n:8,p:'Kalidou Koulibaly'},{n:9,p:'Idrissa Gana Gueye'},{n:10,p:'Pape Matar Sarr'},{n:11,p:'Pape Gueye'},{n:12,p:'Habib Diarra'},{n:13,p:'Foto equipo'},{n:14,p:'Lamine Camara'},{n:15,p:'Sadio Mané'},{n:16,p:'Ismaïla Sarr'},{n:17,p:'Boulaye Dia'},{n:18,p:'Iliman Ndiaye'},{n:19,p:'Nicolas Jackson'},{n:20,p:'Krepin Diatta'}]},
+{code:'EGY',name:'Egipto',flag:'🇪🇬',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Mohamed El Shenawy'},{n:3,p:'Mohamed Hany'},{n:4,p:'Mohamed Hamdy'},{n:5,p:'Yasser Ibrahim'},{n:6,p:'Khaled Sobhi'},{n:7,p:'Ramy Rabia'},{n:8,p:'Hossam Abdelmaguid'},{n:9,p:'Ahmed Fatouh'},{n:10,p:'Marwan Attia'},{n:11,p:'Zizo'},{n:12,p:'Hamdy Fathy'},{n:13,p:'Foto equipo'},{n:14,p:'Mohamed Lasheen'},{n:15,p:'Emam Ashour'},{n:16,p:'Osama Faisal'},{n:17,p:'Mohamed Salah'},{n:18,p:'Mostafa Mohamed'},{n:19,p:'Trezeguet'},{n:20,p:'Omar Marmoush'}]},
+{code:'ALG',name:'Argelia',flag:'🇩🇿',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Alexis Guendouz'},{n:3,p:'Ramy Bensebaini'},{n:4,p:'Youcef Atal'},{n:5,p:"Rayan Aït-Nouri"},{n:6,p:'Mohamed Amine Tougai'},{n:7,p:'Aïssa Mandi'},{n:8,p:'Ismail Bennacer'},{n:9,p:'Houssem Aquar'},{n:10,p:'Hicham Boudaoui'},{n:11,p:'Ramiz Zerrouki'},{n:12,p:'Nabil Bentalab'},{n:13,p:'Foto equipo'},{n:14,p:'Farès Chaibi'},{n:15,p:'Riyad Mahrez'},{n:16,p:'Saïd Benrahma'},{n:17,p:'Anis Hadj Moussa'},{n:18,p:'Amine Gouiri'},{n:19,p:'Baghdad Bounedjah'},{n:20,p:'Mohammed Amoura'}]},
+{code:'GHA',name:'Ghana',flag:'🇬🇭',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Lawrence Ati Zigi'},{n:3,p:'Tariq Lamptey'},{n:4,p:'Mohammed Salisu'},{n:5,p:'Alidu Seidu'},{n:6,p:'Alexander Djiku'},{n:7,p:'Gideon Mensah'},{n:8,p:'Caleb Yirenkyi'},{n:9,p:'Abdul Fatawu Issahaku'},{n:10,p:'Thomas Partey'},{n:11,p:'Salis Abdul Samed'},{n:12,p:'Kamaldeen Sulemana'},{n:13,p:'Foto equipo'},{n:14,p:'Mohammed Kudus'},{n:15,p:'Iñaki Williams'},{n:16,p:'Jordan Ayew'},{n:17,p:'André Ayew'},{n:18,p:'Joseph Paintsil'},{n:19,p:'Osman Bukari'},{n:20,p:'Antoine Semenyo'}]},
+{code:'CIV',name:'Costa de Marfil',flag:'🇨🇮',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Yahia Fofana'},{n:3,p:'Ghislain Konan'},{n:4,p:'Wilfried Singo'},{n:5,p:'Odilon Kossounou'},{n:6,p:'Evan Ndicka'},{n:7,p:'Willy Boly'},{n:8,p:'Emmanuel Agbadou'},{n:9,p:'Ousmane Diomandé'},{n:10,p:'Franck Kessié'},{n:11,p:'Seko Fofana'},{n:12,p:'Ibrahim Sangaré'},{n:13,p:'Foto equipo'},{n:14,p:'Jean-Philippe Gbamin'},{n:15,p:'Amad Diallo'},{n:16,p:'Sébastien Haller'},{n:17,p:'Simon Adingra'},{n:18,p:'Yan Diomandé'},{n:19,p:'Evann Guessand'},{n:20,p:'Oumar Diakité'}]},
+{code:'TUN',name:'Túnez',flag:'🇹🇳',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Bechir Ben Saïd'},{n:3,p:'Aymen Dahmen'},{n:4,p:'Yan Valery'},{n:5,p:'Montassar Talbi'},{n:6,p:'Yassine Meriah'},{n:7,p:'Ali Abdi'},{n:8,p:'Dylan Bronn'},{n:9,p:'Ellyes Skhiri'},{n:10,p:'Aïssa Laïdouni'},{n:11,p:'Ferjani Sassi'},{n:12,p:'Mohamed Ali Ben Romdhane'},{n:13,p:'Foto equipo'},{n:14,p:'Hannibal Mejbri'},{n:15,p:'Elias Achouri'},{n:16,p:'Elias Saad'},{n:17,p:'Hazem Mastouri'},{n:18,p:'Ismael Gharbi'},{n:19,p:'Sayfallah Ltaief'},{n:20,p:'Naïm Sliti'}]},
+{code:'RSA',name:'Sudáfrica',flag:'🇿🇦',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Ronwen Williams'},{n:3,p:'Sipho Chaine'},{n:4,p:'Aubrey Modiba'},{n:5,p:'Samukele Kabini'},{n:6,p:'Mbekezeli Mbokazi'},{n:7,p:'Khulumani Ndamane'},{n:8,p:'Siyabonga Ngezana'},{n:9,p:'Khuliso Mudau'},{n:10,p:'Nkosinathi Sibisi'},{n:11,p:'Teboho Mokoena'},{n:12,p:'Thalente Mbatha'},{n:13,p:'Foto equipo'},{n:14,p:'Bathasi Aubaas'},{n:15,p:'Yaya Sithole'},{n:16,p:'Sipho Mbule'},{n:17,p:'Lyle Foster'},{n:18,p:'Iqraam Rayners'},{n:19,p:'Mohau Nkota'},{n:20,p:'Oswin Appollis'}]},
+{code:'CPV',name:'Cabo Verde',flag:'🇨🇻',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Vozinha'},{n:3,p:'Logan Costa'},{n:4,p:'Pico'},{n:5,p:'Diney'},{n:6,p:'Steven Moreira'},{n:7,p:'Wagner Pina'},{n:8,p:'João Paulo'},{n:9,p:'Yannick Semedo'},{n:10,p:'Kevin Pina'},{n:11,p:'Patrick Andrade'},{n:12,p:'Jamiro Monteiro'},{n:13,p:'Foto equipo'},{n:14,p:'Deroy Duarte'},{n:15,p:'Garry Rodrigues'},{n:16,p:'Jovane Cabral'},{n:17,p:'Ryan Mendes'},{n:18,p:'Dailon Livramento'},{n:19,p:'Willy Semedo'},{n:20,p:'Bebé'}]},
+{code:'COD',name:'Congo DR',flag:'🇨🇩',region:'África',s:[
+{n:1,p:'Escudo'},{n:2,p:'Lionel Mpasi'},{n:3,p:'Aaron Wan-Bissaka'},{n:4,p:'Axel Tuanzebe'},{n:5,p:'Arthur Masuaku'},{n:6,p:'Chancel Mbemba'},{n:7,p:'Joris Kayembe'},{n:8,p:'Charles Pickel'},{n:9,p:"Ngal'ayel Mukau"},{n:10,p:'Edo Kayembe'},{n:11,p:'Samuel Moutoussamy'},{n:12,p:'Noah Sadiki'},{n:13,p:'Foto equipo'},{n:14,p:'Théo Bongonda'},{n:15,p:'Meschak Elia'},{n:16,p:'Yoane Wissa'},{n:17,p:'Brian Cipenga'},{n:18,p:'Fiston Mayele'},{n:19,p:'Cédric Bakambu'},{n:20,p:'Nathanaël Mbuku'}]},
+{code:'KOR',name:'Corea del Sur',flag:'🇰🇷',region:'Asia',s:[
+{n:1,p:'Escudo'},{n:2,p:'Hyeon-woo Jo'},{n:3,p:'Seung-Gyu Kim'},{n:4,p:'Min-jae Kim'},{n:5,p:'Yu-min Cho'},{n:6,p:'Young-woo Seol'},{n:7,p:'Han-beom Lee'},{n:8,p:'Tae-seok Lee'},{n:9,p:'Myung-jae Lee'},{n:10,p:'Jae-sung Lee'},{n:11,p:'In-beom Hwang'},{n:12,p:'Kang-in Lee'},{n:13,p:'Foto equipo'},{n:14,p:'Seung-ho Paik'},{n:15,p:'Jens Castrop'},{n:16,p:'Dongg-yeong Lee'},{n:17,p:'Gue-sung Cho'},{n:18,p:'Heung-min Son'},{n:19,p:'Hee-chan Hwang'},{n:20,p:'Hyeon-Gyu Oh'}]},
+{code:'JPN',name:'Japón',flag:'🇯🇵',region:'Asia',s:[
+{n:1,p:'Escudo'},{n:2,p:'Zion Suzuki'},{n:3,p:'Henry Mochizuki'},{n:4,p:'Ayumu Seko'},{n:5,p:'Junnosuke Suzuki'},{n:6,p:'Shogo Taniguchi'},{n:7,p:'Tsuyoshi Watanabe'},{n:8,p:'Kaishu Sano'},{n:9,p:'Yuki Soma'},{n:10,p:'Ao Tanaka'},{n:11,p:'Daichi Kamada'},{n:12,p:'Takefusa Kubo'},{n:13,p:'Foto equipo'},{n:14,p:'Ritsu Doan'},{n:15,p:'Keito Nakamura'},{n:16,p:'Takumi Minamino'},{n:17,p:'Shuto Machino'},{n:18,p:'Junya Ito'},{n:19,p:'Koki Ogawa'},{n:20,p:'Ayase Ueda'}]},
+{code:'KSA',name:'Arabia Saudita',flag:'🇸🇦',region:'Asia',s:[
+{n:1,p:'Escudo'},{n:2,p:'Nawaf Alaqidi'},{n:3,p:'Abdulrahman Al-Sanbi'},{n:4,p:'Saud Abdulhamid'},{n:5,p:'Nawaf Bouwashl'},{n:6,p:'Jihad Thakri'},{n:7,p:'Moteb Al-Harbi'},{n:8,p:'Hassan Altambakti'},{n:9,p:'Musab Aljuwayr'},{n:10,p:'Ziyad Aljohani'},{n:11,p:'Abdullah Alkhaibari'},{n:12,p:'Nasser Aldawsari'},{n:13,p:'Foto equipo'},{n:14,p:'Saleh Abu Alshamat'},{n:15,p:'Marwan Alsahafi'},{n:16,p:'Salem Aldawsari'},{n:17,p:'Abdulrahman Al-Aboud'},{n:18,p:'Feras Akbrikan'},{n:19,p:'Saleh Alshehri'},{n:20,p:'Abdullah Al-Hamdan'}]},
+{code:'IRN',name:'Irán',flag:'🇮🇷',region:'Asia',s:[
+{n:1,p:'Escudo'},{n:2,p:'Alireza Beiranvand'},{n:3,p:'Morteza Pouraliganji'},{n:4,p:'Ehsan Hajsafi'},{n:5,p:'Milad Mohammadi'},{n:6,p:'Shojae Khalilzadeh'},{n:7,p:'Ramin Rezaeian'},{n:8,p:'Hossein Kanaani'},{n:9,p:'Sadegh Moharrami'},{n:10,p:'Saleh Hardani'},{n:11,p:'Saeed Ezatolahi'},{n:12,p:'Saman Ghoddos'},{n:13,p:'Foto equipo'},{n:14,p:'Omid Noorafkan'},{n:15,p:'Roozbeh Cheshmi'},{n:16,p:'Mohammad Mohebi'},{n:17,p:'Sardar Azmoun'},{n:18,p:'Mehdi Taremi'},{n:19,p:'Alireza Jahanbakhsh'},{n:20,p:'Ali Gholizadeh'}]},
+{code:'IRQ',name:'Irak',flag:'🇮🇶',region:'Asia',s:[
+{n:1,p:'Escudo'},{n:2,p:'Jalal Hassan'},{n:3,p:'Rebin Sulaka'},{n:4,p:'Hussein Ali'},{n:5,p:'Akam Hashem'},{n:6,p:'Merchas Doski'},{n:7,p:'Zaid Tahseen'},{n:8,p:'Manaf Younis'},{n:9,p:'Zidane Iqbal'},{n:10,p:'Amir Al-Ammari'},{n:11,p:'Ibrahim Bavesh'},{n:12,p:'Ali Jasim'},{n:13,p:'Foto equipo'},{n:14,p:'Youssef Amyn'},{n:15,p:'Aimar Sher'},{n:16,p:'Marko Farji'},{n:17,p:'Osama Rashid'},{n:18,p:'Ali Al-Hamadi'},{n:19,p:'Aymen Hussein'},{n:20,p:'Mohanad Ali'}]},
+{code:'QAT',name:'Qatar',flag:'🇶🇦',region:'Asia',s:[
+{n:1,p:'Escudo'},{n:2,p:'Meshaal Barsham'},{n:3,p:'Sultan Albrake'},{n:4,p:'Lucas Mendes'},{n:5,p:'Homam Ahmed'},{n:6,p:'Boualem Khoukhi'},{n:7,p:'Pedro Miguel'},{n:8,p:'Tarek Salman'},{n:9,p:'Mohamed Al-Mannai'},{n:10,p:'Karim Boudiaf'},{n:11,p:'Assim Madibo'},{n:12,p:'Ahmed Fatehi'},{n:13,p:'Foto equipo'},{n:14,p:'Mohammed Waad'},{n:15,p:'Abdulaziz Hatem'},{n:16,p:'Hassan Al-Haydos'},{n:17,p:'Edmilson Junior'},{n:18,p:'Akram Hassan Afif'},{n:19,p:'Ahmed Al Ganehi'},{n:20,p:'Almoez Ali'}]},
+{code:'JOR',name:'Jordania',flag:'🇯🇴',region:'Asia',s:[
+{n:1,p:'Escudo'},{n:2,p:'Yazeed Abulaila'},{n:3,p:'Ihsan Haddad'},{n:4,p:'Mohammad Abu Hashish'},{n:5,p:'Yazan Al-Arab'},{n:6,p:'Abdallah Nasib'},{n:7,p:'Saleem Obaid'},{n:8,p:'Mohammad Abualnadi'},{n:9,p:'Ibrahim Saadeh'},{n:10,p:'Nizar Al-Rashdan'},{n:11,p:'Noor Al-Rawabdeh'},{n:12,p:'Mohannad Abu Taha'},{n:13,p:'Foto equipo'},{n:14,p:'Amer Jamous'},{n:15,p:'Musa Al-Taamari'},{n:16,p:'Yazan Al-Naimat'},{n:17,p:'Mahmoud Al-Mardi'},{n:18,p:'Ali Olwan'},{n:19,p:'Mohammad Abu Zrayq'},{n:20,p:'Ibrahim Sabra'}]},
+{code:'UZB',name:'Uzbekistán',flag:'🇺🇿',region:'Asia',s:[
+{n:1,p:'Escudo'},{n:2,p:'Utkir Yusupov'},{n:3,p:'Farrukh Tashkentov'},{n:4,p:'Sherzod Nasrullaev'},{n:5,p:'Umar Eshmurodov'},{n:6,p:'Husniddin Aliqulov'},{n:7,p:'Rustamjon Ashurmatov'},{n:8,p:'Khojiakbar Alijonov'},{n:9,p:'Abdukodir Khusanov'},{n:10,p:'Odiljon Hamrobekov'},{n:11,p:'Otabek Shukurov'},{n:12,p:'Jamshid Iskanderov'},{n:13,p:'Foto equipo'},{n:14,p:'Azizbek Turgunboev'},{n:15,p:'Khojimat Erkinov'},{n:16,p:'Eldor Shomurodov'},{n:17,p:'Oston Urunov'},{n:18,p:'Jaloliddin Masharipov'},{n:19,p:'Igor Sergeev'},{n:20,p:'Abbosbek Fayzullaev'}]},
+{code:'AUS',name:'Australia',flag:'🇦🇺',region:'Oceanía',s:[
+{n:1,p:'Escudo'},{n:2,p:'Mathew Ryan'},{n:3,p:'Joe Gauci'},{n:4,p:'Harry Souttar'},{n:5,p:'Alessandro Circati'},{n:6,p:'Jordan Bos'},{n:7,p:'Aziz Behich'},{n:8,p:'Cameron Burgess'},{n:9,p:'Lewis Miller'},{n:10,p:'Milos Degenek'},{n:11,p:'Jackson Irvine'},{n:12,p:'Riley McGree'},{n:13,p:'Foto equipo'},{n:14,p:"Aiden O'Neill"},{n:15,p:'Connor Metcalfe'},{n:16,p:'Patrick Yazbek'},{n:17,p:'Craig Goodwin'},{n:18,p:'Kusini Yengi'},{n:19,p:'Nestory Irankunda'},{n:20,p:'Mohamed Touré'}]},
+{code:'NZL',name:'Nueva Zelanda',flag:'🇳🇿',region:'Oceanía',s:[
+{n:1,p:'Escudo'},{n:2,p:'Max Crocombe'},{n:3,p:'Alex Paulsen'},{n:4,p:'Michael Boxall'},{n:5,p:'Liberato Cacace'},{n:6,p:'Tim Payne'},{n:7,p:'Tyler Bindon'},{n:8,p:'Francis de Vries'},{n:9,p:'Finn Surman'},{n:10,p:'Joe Bell'},{n:11,p:'Sarpreet Singh'},{n:12,p:'Ryan Thomas'},{n:13,p:'Foto equipo'},{n:14,p:'Matthew Garbett'},{n:15,p:'Marko Stamenić'},{n:16,p:'Ben Old'},{n:17,p:'Chris Wood'},{n:18,p:'Elijah Just'},{n:19,p:'Callum McCowatt'},{n:20,p:'Kosta Barbarouses'}]} ,
+{code:'FWC',name:'Especiales / Intro',flag:'🏆',region:'Especiales',s:[
+{n:0,p:'Panini Logo',t:'FOIL'},
+{n:1,p:'Official Emblem',t:'FOIL'},
+{n:2,p:'Official Emblem',t:'FOIL'},
+{n:3,p:'Official Mascots',t:'FOIL'},
+{n:4,p:'Official Slogan',t:'FOIL'},
+{n:5,p:'Official Ball',t:'FOIL'},
+{n:6,p:'Canada - Host Countries & Cities',t:'FOIL'},
+{n:7,p:'Mexico - Host Countries & Cities',t:'FOIL'},
+{n:8,p:'USA - Host Countries & Cities',t:'FOIL'},
+{n:9,p:'Italy 1934 - FIFA Museum',t:'FOIL'},
+{n:10,p:'Uruguay 1950 - FIFA Museum',t:'FOIL'},
+{n:11,p:'West Germany 1954 - FIFA Museum',t:'FOIL'},
+{n:12,p:'Brazil 1962 - FIFA Museum',t:'FOIL'},
+{n:13,p:'West Germany 1974 - FIFA Museum',t:'FOIL'},
+{n:14,p:'Argentina 1986 - FIFA Museum',t:'FOIL'},
+{n:15,p:'Brazil 1994 - FIFA Museum',t:'FOIL'},
+{n:16,p:'Brazil 2002 - FIFA Museum',t:'FOIL'},
+{n:17,p:'Italy 2006 - FIFA Museum',t:'FOIL'},
+{n:18,p:'Germany 2014 - FIFA Museum',t:'FOIL'},
+{n:19,p:'Argentina 2022 - FIFA Museum',t:'FOIL'}
+]}
+];
+
+let owned={};
+try{owned=JSON.parse(localStorage.getItem(LOCAL_KEY)||'{}')}catch(e){owned={};}
+normalizeOwned();
+
+function normalizeOwned(){
+  Object.keys(owned||{}).forEach(code=>{
+    Object.keys(owned[code]||{}).forEach(n=>{
+      if(owned[code][n]===true)owned[code][n]=1;
+      const v=Number(owned[code][n]||0);
+      if(v<=0)delete owned[code][n];
+      else owned[code][n]=v;
+    });
+    if(!Object.keys(owned[code]||{}).length)delete owned[code];
+  });
+}
+
+function saveLocal(){
+  try{localStorage.setItem(LOCAL_KEY,JSON.stringify(owned));}catch(e){}
+}
+
+function hasLocalData(){
+  return Object.keys(owned||{}).some(code=>Object.keys(owned[code]||{}).length>0);
+}
+
+function refreshVisible(){
+  normalizeOwned();
+  saveLocal();
+  updateStats();
+  if(curTeam){
+    updateDetailHeader();
+    renderStickers();
+  }else{
+    renderTeams();
+  }
+}
+
+async function initFirebaseSync(){
+  if(!FIREBASE_READY){
+    setSyncStatus('Modo local: falta Firebase',false);
+    saveLocal();
+    return;
+  }
+
+  try{
+    const app=initializeApp(firebaseConfig);
+    db=getDatabase(app);
+    albumRef=ref(db,'albums/'+ALBUM_ID);
+    ownedRef=ref(db,'albums/'+ALBUM_ID+'/owned');
+
+    onValue(ownedRef, async snap=>{
+      const remote=snap.val()||{};
+
+      if(firstRemoteLoad){
+        firstRemoteLoad=false;
+        if(!snap.exists()&&hasLocalData()){
+          await set(ownedRef,owned);
+          await set(ref(db,'albums/'+ALBUM_ID+'/updatedAt'),serverTimestamp());
+          setSyncStatus('Sincronizado en la nube',true);
+          return;
+        }
+      }
+
+      owned=remote;
+      isRemoteReady=true;
+      setSyncStatus('Sincronizado en la nube',true);
+      refreshVisible();
+    }, err=>{
+      console.error(err);
+      isRemoteReady=false;
+      setSyncStatus('Error Firebase: usando local',false);
+      refreshVisible();
+    });
+  }catch(e){
+    console.error(e);
+    isRemoteReady=false;
+    setSyncStatus('Error Firebase: usando local',false);
+    refreshVisible();
+  }
+}
+
+function save(){saveLocal();}
+
+let curRegion='Todas';
+let curTeam=null;
+let curFilter='all';
+
+function gotTeam(t){return Object.keys(owned[t.code]||{}).filter(k=>owned[t.code][k]>=1).length;}
+function getCount(code,n){return (owned[code]&&owned[code][n])||0;}
+function isGot(code,n){return getCount(code,n)>=1;}
+
+async function addSticker(code,n){
+  if(isRemoteReady&&ownedRef){
+    const stickerRef=ref(db,'albums/'+ALBUM_ID+'/owned/'+code+'/'+n);
+    await runTransaction(stickerRef,current=>(current||0)+1);
+    await set(ref(db,'albums/'+ALBUM_ID+'/updatedAt'),serverTimestamp());
+    return;
+  }
+
+  if(!owned[code])owned[code]={};
+  owned[code][n]=(owned[code][n]||0)+1;
+  saveLocal();
+  refreshVisible();
+  updateTeamCard(code);
+}
+
+async function removeSticker(code,n,ev){
+  if(ev){ev.stopPropagation();ev.preventDefault();}
+  if(isRemoteReady&&ownedRef){
+    const stickerRef=ref(db,'albums/'+ALBUM_ID+'/owned/'+code+'/'+n);
+    await runTransaction(stickerRef,current=>{
+      const next=(current||0)-1;
+      return next>0?next:null;
+    });
+    await set(ref(db,'albums/'+ALBUM_ID+'/updatedAt'),serverTimestamp());
+    return;
+  }
+
+  if(!owned[code]||!owned[code][n])return;
+  owned[code][n]--;
+  if(owned[code][n]<=0)delete owned[code][n];
+  saveLocal();
+  refreshVisible();
+  updateTeamCard(code);
+}
+
+function updateStats(){
+  const total=TEAMS.reduce((a,t)=>a+gotTeam(t),0);
+  const totalStickers=TEAMS.reduce((a,t)=>a+t.s.length,0);
+  const pct=Math.round(total/totalStickers*100);
+  const full=TEAMS.filter(t=>gotTeam(t)===t.s.length).length;
+  let repeats=0;
+  TEAMS.forEach(t=>{
+    Object.values(owned[t.code]||{}).forEach(c=>{if(c>1)repeats+=c-1;});
+  });
+  document.getElementById('gotC').textContent=total;
+  document.getElementById('fullT').textContent=full;
+  document.getElementById('missC').textContent=totalStickers-total;
+  document.getElementById('sectionsT').textContent=TEAMS.length;
+  document.getElementById('repC').textContent=repeats;
+  const pf=document.getElementById('mainProg');
+  pf.style.width=pct+'%';
+  document.getElementById('pctTxt').textContent=pct>5?pct+'%':'';
+}
+
+function updateTeamCard(code){
+  const el=document.getElementById('tc-'+code);
+  if(!el)return;
+  const t=TEAMS.find(x=>x.code===code);
+  const g=gotTeam(t);
+  const pct=Math.round(g/t.s.length*100);
+  el.querySelector('.mini-bar-fill').style.width=pct+'%';
+  el.querySelector('.team-prog').innerHTML='<span>'+g+'</span>/'+t.s.length;
+  if(g===t.s.length){el.classList.add('full');el.querySelector('.complete-badge').textContent='⭐';}
+  else{el.classList.remove('full');el.querySelector('.complete-badge').textContent='';}
+}
+
+function buildRegionPills(){
+  const c=document.getElementById('regionPills');
+  c.innerHTML=REGIONS.map(r=>`<button class="rpill${r==='Todas'?' active':''}" onclick="setRegion('${r}',this)">${r}</button>`).join('');
+}
+
+function setRegion(r,btn){
+  curRegion=r;
+  document.querySelectorAll('.rpill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTeams();
+}
+
+function renderTeams(){
+  const q=(document.getElementById('srch').value||'').toLowerCase();
+  const list=TEAMS.filter(t=>{
+    if(q&&!t.name.toLowerCase().includes(q)&&!t.code.toLowerCase().includes(q))return false;
+    if(curRegion!=='Todas'&&t.region!==curRegion)return false;
+    return true;
+  });
+  const g=document.getElementById('teamsGrid');
+  g.innerHTML=list.map(t=>{
+    const got=gotTeam(t);
+    const pct=Math.round(got/t.s.length*100);
+    const full=got===t.s.length;
+    return`<div class="team-card${full?' full':''}" id="tc-${t.code}" onclick="showTeam('${t.code}')">
+      <span class="complete-badge">${full?'⭐':''}</span>
+      <span class="team-flag">${t.flag}</span>
+      <div class="team-name">${t.name}</div>
+      <div class="mini-bar-wrap"><div class="mini-bar-fill" style="width:${pct}%"></div></div>
+      <div class="team-prog"><span>${got}</span>/${t.s.length}</div>
+    </div>`;
+  }).join('');
+}
+
+function showTeam(code){
+  curTeam=TEAMS.find(t=>t.code===code);
+  document.getElementById('teamsView').style.display='none';
+  document.getElementById('detailView').style.display='block';
+  document.getElementById('dFlag').textContent=curTeam.flag;
+  document.getElementById('dName').textContent=curTeam.name;
+  document.getElementById('dSub').textContent=curTeam.code+' · '+curTeam.region;
+  curFilter='all';
+  document.querySelector('.filter-tabs .ftab:first-child').textContent='Todas ('+curTeam.s.length+')';
+  document.querySelectorAll('.ftab').forEach((b,i)=>{b.classList.toggle('active',i===0);});
+  renderStickers();
+  updateDetailHeader();
+}
+
+function updateDetailHeader(){
+  if(!curTeam)return;
+  const g=gotTeam(curTeam);
+  const pct=Math.round(g/curTeam.s.length*100);
+  document.getElementById('dGot').textContent=g;
+  document.getElementById('dProgFill').style.width=pct+'%';
+  document.getElementById('dTotal').textContent=curTeam.s.length;
+  const miss=curTeam.s.length-g;
+  let reps=0;
+  curTeam.s.forEach(s=>{const c=getCount(curTeam.code,s.n);if(c>1)reps++;});
+  document.getElementById('ftGot').textContent='Las tengo ('+g+')';
+  document.getElementById('ftMiss').textContent='Me faltan ('+miss+')';
+  document.getElementById('ftRep').textContent='Repetidas ('+reps+')';
+}
+
+function setFilter(f,btn){
+  curFilter=f;
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderStickers();
+}
+
+function renderStickers(){
+  updateDetailHeader();
+  const stickers=curTeam.s.filter(s=>{
+    const g=isGot(curTeam.code,s.n);
+    if(curFilter==='got')return g;
+    if(curFilter==='miss')return !g;
+    if(curFilter==='rep')return getCount(curTeam.code,s.n)>1;
+    return true;
+  });
+  const g=document.getElementById('stGrid');
+  if(!stickers.length){g.innerHTML='<p class="empty-msg">No hay figuritas aquí todavía.</p>';return;}
+  g.innerHTML=stickers.map(s=>{
+    const got=isGot(curTeam.code,s.n);
+    const count=getCount(curTeam.code,s.n);
+    const special=s.t;
+    return`<div class="sticker${got?' got':''}" onclick="addSticker('${curTeam.code}',${s.n})">
+      <button class="s-minus" onclick="removeSticker('${curTeam.code}',${s.n},event)" title="Quitar una">−</button>
+      <div class="s-code">${curTeam.code}${s.n}</div>
+      <div class="s-name">${s.p}</div>
+      ${special?`<span class="s-type">${s.t}</span>`:''}
+      ${count>1?`<span class="s-repeat visible">x${count}</span>`:`<span class="s-repeat"></span>`}
+      <div class="s-check"><i class="ti ti-check" aria-hidden="true"></i></div>
+    </div>`;
+  }).join('');
+}
+
+function showTeams(){
+  curTeam=null;
+  document.getElementById('detailView').style.display='none';
+  document.getElementById('teamsView').style.display='block';
+  renderTeams();
+}
+
+
+function stickerLabel(team,s){
+  return team.code+(s.n===0?'00':s.n)+' '+s.p;
+}
+
+function formatStickerCode(teamCode,n){
+  return teamCode+(Number(n)===0?'00':String(n));
+}
+
+function getRepeatedStickersByTeam(t){
+  return t.s
+    .map(s=>({
+      code:formatStickerCode(t.code,s.n),
+      name:s.p,
+      count:Number(getCount(t.code,s.n)||0)
+    }))
+    .filter(item=>item.count>1);
+}
+
+function exportProgressPDF(){
+  normalizeOwned();
+  const totalStickers=TEAMS.reduce((a,t)=>a+t.s.length,0);
+  const gotTotal=TEAMS.reduce((a,t)=>a+gotTeam(t),0);
+  let repeats=0;
+  TEAMS.forEach(t=>Object.values(owned[t.code]||{}).forEach(c=>{const qty=Number(c||0); if(qty>1)repeats+=qty-1;}));
+  const complete=TEAMS.filter(t=>gotTeam(t)===t.s.length).length;
+  const today=new Date().toLocaleDateString('es-AR');
+
+  const compactCodes=(arr, emptyText)=>arr.length ? arr.join(', ') : emptyText;
+
+  const cards=TEAMS.map(t=>{
+    const got=gotTeam(t);
+    const missingCodes=t.s.filter(s=>!isGot(t.code,s.n)).map(s=>formatStickerCode(t.code,s.n));
+    const repeatedCodes=getRepeatedStickersByTeam(t).map(r=>`${r.code}×${r.count} (+${r.count-1})`);
+
+    // En la exportación mostramos únicamente lo accionable:
+    // figuritas que faltan y repetidas. Si una sección está completa
+    // y no tiene repetidas, no ocupa espacio en el PDF.
+    if(!missingCodes.length && !repeatedCodes.length) return '';
+
+    return `<div class="print-team">
+      <h3>${t.flag} ${t.name} · faltan ${missingCodes.length} · rep ${repeatedCodes.length}</h3>
+      ${missingCodes.length > 0 ? `<div class="print-line print-missing"><strong>FALTAN:</strong> ${missingCodes.join(', ')}</div>` : ''}
+      ${repeatedCodes.length > 0 ? `<div class="print-line print-repeated"><strong>REPETIDAS:</strong> ${repeatedCodes.join(', ')}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  const report=document.getElementById('printReport');
+  report.innerHTML=`
+    <div class="print-header">
+      <h1>Álbum Panini 2026 · faltantes y repetidas</h1>
+    </div>
+    <div class="print-stats">
+      <div class="print-stat"><strong>${gotTotal}</strong>Tengo</div>
+      <div class="print-stat"><strong>${totalStickers-gotTotal}</strong>Faltan</div>
+      <div class="print-stat"><strong>${complete}/${TEAMS.length}</strong>Comp.</div>
+      <div class="print-stat"><strong>${repeats}</strong>Rep. extra</div>
+    </div>
+    <div class="print-grid">${cards}</div>
+  `;
+
+  requestAnimationFrame(()=>setTimeout(()=>window.print(),150));
+}
+
+window.renderTeams=renderTeams;
+window.setRegion=setRegion;
+window.showTeam=showTeam;
+window.showTeams=showTeams;
+window.setFilter=setFilter;
+window.addSticker=addSticker;
+window.removeSticker=removeSticker;
+window.exportProgressPDF=exportProgressPDF;
+
+buildRegionPills();
+refreshVisible();
+initFirebaseSync();
+</script>
